@@ -1,72 +1,103 @@
 import React, {Component, Fragment} from 'react';
-import {PlayerGroup} from './PlayerGroup';
+import {Player} from "./Player";
+import playerData from '../Data/players.json';
+import positionData from '../Data/positions.json';
+import './player.css';
 
 function PlayingStatus(props) {
     return (
-        <div className="nav">
-            <h1>{props.playingPlayers} / {props.totalPlayers} players this week</h1>
+        <div className="player-status-bar">
+            <span className="numbers playing">{props.playingPlayers}</span><span className="numbers"> / {props.totalPlayers}</span> <span>players this week</span>
         </div>
     )
 }
 
 class PlayerList extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
+            playerData: [],
+            positionData: [],
             groups: [],
-            playingPlayers: 0,
-            totalPlayers: 0
         };
 
-
+        this.setIsPlaying = this.setIsPlaying.bind(this);
     }
+
 
     componentDidMount() {
-        this.setState({groups: this.getPlayerGroups(this.props.playerData, this.props.positionData)});
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.playerData !== this.props.playerData) {
-            console.log('setting groups');
-            this.setState({groups: this.getPlayerGroups(this.props.playerData, this.props.positionData)});
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
-        if (nextProps.playerData !== this.props.playerData) {
-            console.log('setting groups');
-            this.setState({groups: this.getPlayerGroups(this.props.playerData, this.props.positionData)});
-        }
+        this.hydrateStateWithLocalStorage();
+        this.el = document.querySelector('.player-status-bar');
+        setTimeout(() => {
+            if (this.state.playerData.length === 0) {
+                const playerData = PlayerList.getPlayerData();
+                const positionData = PlayerList.getPositionData();
+                this.setState({
+                    playerData: playerData,
+                    positionData: positionData,
+                    groups: this.getPlayerGroups(playerData, positionData)
+                }, () => {
+                    console.log('saving state', this.state);
+                    this.saveStateToLocalStorage();
+                });
+            }
+        });
     }
 
     render() {
         return (
             <div className="player-list">
                 {
-                    <PlayingStatus playingPlayers={this.props.playerData.filter(player => player.playing).length} totalPlayers={this.props.playerData.length} />
+                    <PlayingStatus playingPlayers={this.state.playerData.filter(player => player.playing).length} totalPlayers={this.state.playerData.length}/>
                 }
                 {
                     this.state.groups.map(group => {
                         const type = Object.keys(group)[0];
-                        return (
-                            <PlayerGroup
-                                key={type}
-                                name={type}
-                                players={group[type]}
-                                setIsPlaying={this.props.setIsPlaying}
-                            />
-                        )
+                        if (group[type].length > 0) {
+                            return (
+                                <Fragment key={type}>
+                                    <h2 className="player-group-name">{type}</h2>
+                                    <div className="player-group">
+                                        {group[type].map(player => {
+                                            const actualPlayer = this.state.playerData.find(p => p.id === player.id);
+                                            return (
+                                                <Player
+                                                    key={actualPlayer.id}
+                                                    {...actualPlayer}
+                                                    setIsPlaying={this.setIsPlaying}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </Fragment>
+                            )
+                        }
+                        return null;
                     })
                 }
             </div>
         );
     }
 
+    setIsPlaying = (e) => {
+        this.setState( ({playerData}) => {
+            const man = playerData.find(p => p.id === e.props.id);
+            man.playing = !man.playing;
+            return man;
+        }, () => {
+            this.saveStateToLocalStorage();
+
+            const el = document.querySelector('.player-status-bar');
+            el.classList.add('highlight');
+            setTimeout(() => {
+                el.classList.remove('highlight');
+            }, 200);
+        })
+    };
+
     getPlayerGroups(players, positionOrder) {
         const groupedPlayers = [];
-        let playingPlayers = 0;
-        let totalPlayers = 0;
         if (!players || !players.length) {
             return groupedPlayers;
         }
@@ -86,6 +117,43 @@ class PlayerList extends Component {
             });
         }
         return groupedPlayers;
+    }
+
+    static getPositionData() {
+        return positionData;
+    }
+
+    static getPlayerData() {
+        return playerData;
+    }
+
+    hydrateStateWithLocalStorage() {
+        console.log('hydrating');
+        // for all items in state
+        for (let key in this.state) {
+            // if the key exists in localStorage
+            if (localStorage.hasOwnProperty(key)) {
+                // get the key's value from localStorage
+                let value = localStorage.getItem(key);
+
+                // parse the localStorage string and setState
+                try {
+                    value = JSON.parse(value);
+                    this.setState({[key]: value});
+                } catch (e) {
+                    // handle empty string
+                    this.setState({[key]: value});
+                }
+            }
+        }
+    }
+
+    saveStateToLocalStorage() {
+        // for every item in React state
+        for (let key in this.state) {
+            // save to localStorage
+            localStorage.setItem(key, JSON.stringify(this.state[key]));
+        }
     }
 }
 

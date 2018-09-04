@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import photo from '../saul.png';
 
 class Player extends Component {
@@ -6,7 +6,7 @@ class Player extends Component {
         super(props);
 
         this.state = {
-            playing: this.props.playing,
+            //playing: this.props.playing,
             editing: false,
             name: this.props.name
         };
@@ -30,7 +30,7 @@ class Player extends Component {
         const playerData = JSON.parse(localStorage.getItem("playerData"));
         const storedPlayer = playerData.find(player => player.id === this.props.id);
         storedPlayer.name = name || storedPlayer.name;
-        storedPlayer.playing = playing !== undefined ? playing : storedPlayer.playing;
+        //storedPlayer.playing = playing !== undefined ? playing : storedPlayer.playing;
         localStorage.setItem("playerData", JSON.stringify(playerData));
     }
 
@@ -57,11 +57,10 @@ class Player extends Component {
     }
 
     render() {
-        console.log(this.props.setIsPlaying);
         return (
-            <div key={this.props.id} className={"player " + (this.state.playing ? "playing" : "")}>
+            <div key={this.props.id} className={"player " + (this.props.playing ? "playing" : "")}>
                 <div className="player-photo" onClick={this.handleClick}>
-                    {this.props.photo && <img src={photo} />}
+                    {this.props.photo && <img src={photo} alt="player" />}
                 </div>
                 {!this.state.editing && <h3 onClick={this.editPlayer}>{this.state.name}</h3>}
                 {
