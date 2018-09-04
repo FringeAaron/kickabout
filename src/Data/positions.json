@@ -1,0 +1,26 @@
+[
+  {
+    "Goalkeeper": [
+      "Goalkeeper"
+    ]
+  },
+  {
+    "Defence": [
+      "Right back",
+      "Centre back",
+      "Left back"
+    ]
+  },
+  {
+    "Midfield": [
+      "Right wing",
+      "Centre midfield",
+      "Left wing"
+    ]
+  },
+  {
+    "Attack": [
+      "Centre forward"
+    ]
+  }
+]

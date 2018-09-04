@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'PT Sans Narrow', sans-serif;
+    background: #589ca7 url('bg.jpg') no-repeat center top;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'PT Sans', sans-serif;
+}

@@ -1,0 +1,142 @@
+.App {
+    text-align: center;
+}
+
+.App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 30px;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.logo-name {
+    display: inline-block;
+    vertical-align: bottom;
+    padding-bottom: 8px;
+    padding-left: 8px;
+}
+
+.site-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+nav {
+    background:cornflowerblue;
+    top:0;
+    width: 100%;
+    transition:all 0.5s;
+    position: relative;
+    z-index: 1;
+}
+
+nav ul {
+    margin: 0 auto;
+    padding:0;
+    max-width: 1280px;
+    list-style: none;
+    display:flex;
+}
+
+nav li {
+    flex:1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    padding:10px;
+    display: inline-block;
+    color:white;
+    transition:all 0.2s;
+    text-transform: uppercase;
+}
+
+.player-group-name {
+    text-transform: Uppercase;
+    letter-spacing: 6vw;
+    text-indent: 6vw;
+    font-size: 3vw;
+    color: #ed9d64;
+    overflow: hidden;
+}
+@media screen and (min-width: 650px) {
+    .player-group-name {
+        font-size: 1.1rem;
+        text-indent: 3rem;
+        letter-spacing: 3rem;
+    }
+}
+
+.player-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.player {
+    width: 120px;
+    margin: 10px;
+    flex: 1 0 calc(15% - 10px);
+    transform: scale(0.9);
+    transition: all 0.3s;
+    color: #333;
+}
+
+.player:hover {
+    transform: scale(1);
+}
+
+.player-photo {
+    margin: 0 auto;
+    width: 120px;
+    height: 120px;
+    background-image: url('avatar.svg');
+    background-size: 120px 120px;
+    background-repeat: no-repeat;
+    filter: grayscale(100%);
+    border: 7px solid rgba(100,237,189,.4);
+    border-radius:50%;
+    cursor: pointer;
+    overflow: hidden;
+}
+.player-photo img {
+    max-width: 120px;
+}
+
+.player h3, .player input {
+    margin: 5px 0 0;
+    color: cornflowerblue;
+    font-size: 1.17em;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+.player input:focus {
+    border-bottom: 1px solid cornflowerblue;
+    outline: none;
+    margin: 10px 0;
+}
+
+.player input {
+    background: transparent;
+    border: none;
+    text-align: center;
+    width:100%;
+}
+
+.player.playing .player-photo {
+    filter: unset;
+}
