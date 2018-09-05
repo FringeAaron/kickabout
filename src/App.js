@@ -3,6 +3,12 @@ import './App.css';
 import {PlayerList} from './Players/PlayerList';
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+
+        const request = window.indexedDB.open("MyTestDatabase", 3);
+        console.log(request);
+    }
     render() {
         return (
             <div className="App">
