@@ -6,7 +6,6 @@ class Player extends Component {
         super(props);
 
         this.state = {
-            //playing: this.props.playing,
             editing: false,
             name: this.props.name
         };
@@ -30,7 +29,6 @@ class Player extends Component {
         const playerData = JSON.parse(localStorage.getItem("playerData"));
         const storedPlayer = playerData.find(player => player.id === this.props.id);
         storedPlayer.name = name || storedPlayer.name;
-        //storedPlayer.playing = playing !== undefined ? playing : storedPlayer.playing;
         localStorage.setItem("playerData", JSON.stringify(playerData));
     }
 

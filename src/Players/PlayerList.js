@@ -25,11 +25,9 @@ class PlayerList extends Component {
         this.setIsPlaying = this.setIsPlaying.bind(this);
     }
 
-
     componentDidMount() {
-        this.hydrateStateWithLocalStorage();
-        this.el = document.querySelector('.player-status-bar');
-        setTimeout(() => {
+        this.hydrateStateWithLocalStorage(this).then((result) => {
+            this.el = document.querySelector('.player-status-bar');
             if (this.state.playerData.length === 0) {
                 const playerData = PlayerList.getPlayerData();
                 const positionData = PlayerList.getPositionData();
@@ -81,7 +79,7 @@ class PlayerList extends Component {
     }
 
     setIsPlaying = (e) => {
-        this.setState( ({playerData}) => {
+        this.setState(({playerData}) => {
             const man = playerData.find(p => p.id === e.props.id);
             man.playing = !man.playing;
             return man;
@@ -127,26 +125,30 @@ class PlayerList extends Component {
         return playerData;
     }
 
-    hydrateStateWithLocalStorage() {
-        console.log('hydrating');
-        // for all items in state
-        for (let key in this.state) {
-            // if the key exists in localStorage
-            if (localStorage.hasOwnProperty(key)) {
-                // get the key's value from localStorage
-                let value = localStorage.getItem(key);
+    hydrateStateWithLocalStorage(that) {
+        return new Promise(function (resolve, reject) {
+            console.log('hydrating');
+            // for all items in state
+            for (let key in that.state) {
+                // if the key exists in localStorage
+                if (localStorage.hasOwnProperty(key)) {
+                    // get the key's value from localStorage
+                    let value = localStorage.getItem(key);
 
-                // parse the localStorage string and setState
-                try {
-                    value = JSON.parse(value);
-                    this.setState({[key]: value});
-                } catch (e) {
-                    // handle empty string
-                    this.setState({[key]: value});
+                    // parse the localStorage string and setState
+                    try {
+                        value = JSON.parse(value);
+                        that.setState({[key]: value});
+                    } catch (e) {
+                        // handle empty string
+                        that.setState({[key]: value});
+                    }
                 }
             }
-        }
+            resolve(true);
+        });
     }
+
 
     saveStateToLocalStorage() {
         // for every item in React state
