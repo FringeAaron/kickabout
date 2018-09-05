@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import photo from '../saul.png';
 
 class Player extends Component {
     constructor(props) {
@@ -58,7 +57,7 @@ class Player extends Component {
         return (
             <div key={this.props.id} className={"player " + (this.props.playing ? "playing" : "")}>
                 <div className="player-photo" onClick={this.handleClick}>
-                    {this.props.photo && <img src={photo} alt="player" />}
+                    {this.props.photo && <img src={this.props.photo} alt="player" />}
                 </div>
                 {!this.state.editing && <h3 onClick={this.editPlayer}>{this.state.name}</h3>}
                 {

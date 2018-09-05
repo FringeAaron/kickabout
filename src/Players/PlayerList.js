@@ -2,6 +2,8 @@ import React, {Component, Fragment} from 'react';
 import {Player} from "./Player";
 import playerData from '../Data/players.json';
 import positionData from '../Data/positions.json';
+import {hydrateStateWithLocalStorage, saveStateToLocalStorage} from './localstorage.js';
+import {blendRGBColors} from './utils.js';
 import './player.css';
 
 function PlayingStatus(props) {
@@ -13,6 +15,9 @@ function PlayingStatus(props) {
 }
 
 class PlayerList extends Component {
+
+    statusBarEl;
+    playingEl;
 
     constructor(props) {
         super(props);
@@ -26,8 +31,7 @@ class PlayerList extends Component {
     }
 
     componentDidMount() {
-        this.hydrateStateWithLocalStorage(this).then((result) => {
-            this.el = document.querySelector('.player-status-bar');
+        hydrateStateWithLocalStorage(this).then((result) => {
             if (this.state.playerData.length === 0) {
                 const playerData = PlayerList.getPlayerData();
                 const positionData = PlayerList.getPositionData();
@@ -37,9 +41,10 @@ class PlayerList extends Component {
                     groups: this.getPlayerGroups(playerData, positionData)
                 }, () => {
                     console.log('saving state', this.state);
-                    this.saveStateToLocalStorage();
+                    saveStateToLocalStorage(this);
                 });
             }
+            this.updatePlayerStatusBar();
         });
     }
 
@@ -84,15 +89,37 @@ class PlayerList extends Component {
             man.playing = !man.playing;
             return man;
         }, () => {
-            this.saveStateToLocalStorage();
-
-            const el = document.querySelector('.player-status-bar');
-            el.classList.add('highlight');
-            setTimeout(() => {
-                el.classList.remove('highlight');
-            }, 200);
+            saveStateToLocalStorage(this);
+            this.updatePlayerStatusBar();
         })
     };
+
+    updatePlayerStatusBar() {
+        if (!this.statusBarEl) {
+            this.statusBarEl = document.querySelector('.player-status-bar');
+            this.playingEl = document.querySelector('.player-status-bar .playing');
+        }
+
+        this.statusBarEl.classList.add('highlight');
+        setTimeout(() => {
+            this.statusBarEl.classList.remove('highlight');
+        }, 200);
+
+        const playing = this.state.playerData.filter(player => player.playing).length;
+
+        let colour = "rgb(94,241,187)";
+        if (playing < 10) {
+            let badColour = "rgb(100,0,1)";
+            colour = blendRGBColors(badColour, colour, (playing / 10));
+        }
+        this.statusBarEl.style.setProperty('background-color', colour);
+
+        if (playing % 2 === 1) {
+            this.playingEl.style.setProperty('color', '#ed9d64');
+        } else {
+            this.playingEl.style.setProperty('color', 'inherit');
+        }
+    }
 
     getPlayerGroups(players, positionOrder) {
         const groupedPlayers = [];
@@ -123,39 +150,6 @@ class PlayerList extends Component {
 
     static getPlayerData() {
         return playerData;
-    }
-
-    hydrateStateWithLocalStorage(that) {
-        return new Promise(function (resolve, reject) {
-            console.log('hydrating');
-            // for all items in state
-            for (let key in that.state) {
-                // if the key exists in localStorage
-                if (localStorage.hasOwnProperty(key)) {
-                    // get the key's value from localStorage
-                    let value = localStorage.getItem(key);
-
-                    // parse the localStorage string and setState
-                    try {
-                        value = JSON.parse(value);
-                        that.setState({[key]: value});
-                    } catch (e) {
-                        // handle empty string
-                        that.setState({[key]: value});
-                    }
-                }
-            }
-            resolve(true);
-        });
-    }
-
-
-    saveStateToLocalStorage() {
-        // for every item in React state
-        for (let key in this.state) {
-            // save to localStorage
-            localStorage.setItem(key, JSON.stringify(this.state[key]));
-        }
     }
 }
 
