@@ -60,6 +60,12 @@ class PlayerList extends Component {
                         if (group[type].length > 0) {
                             return (
                                 <Fragment key={type}>
+                                    <button onClick={this.simpleAction}>Test redux action</button>
+                                    <pre>
+                     {
+                         JSON.stringify(this.props)
+                     }
+                    </pre>
                                     <h2 className="player-group-name">{type}</h2>
                                     <div className="player-group">
                                         {group[type].map(player => {
@@ -151,6 +157,12 @@ class PlayerList extends Component {
     static getPlayerData() {
         return playerData;
     }
+
+    simpleAction = (event) => {
+        console.log(this.props);
+        this.props.action();
+    }
+
 }
 
 export {PlayerList};

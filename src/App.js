@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {simpleAction} from "./Actions/simpleAction";
 import './App.css';
 import {PlayerList} from './Players/PlayerList';
 
@@ -20,7 +22,7 @@ class App extends Component {
                     </ul>
                 </nav>*/}
                 <div className="site-wrap">
-                    <PlayerList />
+                    <PlayerList action={this.props.simpleAction}/>
                 </div>
             </div>
         );
@@ -40,6 +42,17 @@ class App extends Component {
         const page = event.currentTarget.pathname.replace(/\W/g, '');
         this.setState({page: page});
     };
+
+
+
 }
 
-export default App;
+const mapStateToProps = state => ({
+    ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+    simpleAction: () => dispatch(simpleAction())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
