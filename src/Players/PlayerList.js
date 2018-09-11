@@ -1,6 +1,5 @@
 import React, {Component, Fragment} from 'react';
 import {Player} from "./Player";
-import playerData from '../Data/players.json';
 import positionData from '../Data/positions.json';
 import {hydrateStateWithLocalStorage, saveStateToLocalStorage} from './localstorage.js';
 import {blendRGBColors} from './utils.js';
@@ -31,9 +30,10 @@ class PlayerList extends Component {
     }
 
     componentDidMount() {
-        hydrateStateWithLocalStorage(this).then((result) => {
-            if (this.state.playerData.length === 0) {
-                const playerData = PlayerList.getPlayerData();
+        //hydrateStateWithLocalStorage(this).then((result) => {
+        if (this.state.playerData.length === 0) {
+            PlayerList.getPlayerData().then(players => {
+                const playerData = players;
                 const positionData = PlayerList.getPositionData();
                 this.setState({
                     playerData: playerData,
@@ -41,18 +41,21 @@ class PlayerList extends Component {
                     groups: this.getPlayerGroups(playerData, positionData)
                 }, () => {
                     console.log('saving state', this.state);
-                    saveStateToLocalStorage(this);
+                    //saveStateToLocalStorage(this);
                 });
-            }
-            this.updatePlayerStatusBar();
-        });
+            });
+
+        }
+        this.updatePlayerStatusBar();
+        //});
     }
 
     render() {
         return (
             <div className="player-list">
+                <button onClick={this.addPlayer}>Hello!</button>
                 {
-                    <PlayingStatus playingPlayers={this.state.playerData.filter(player => player.playing).length} totalPlayers={this.state.playerData.length}/>
+                    <PlayingStatus playingPlayers={this.state.playerData.filter(player => player.playing).length} totalPlayers={this.state.playerData.length} onClick={this.addPlayer}/>
                 }
                 {
                     this.state.groups.map(group => {
@@ -144,12 +147,39 @@ class PlayerList extends Component {
         return groupedPlayers;
     }
 
+    addPlayer() {
+        const data = {
+            "name": "Ben",
+            "photo": null,
+            "position": "Centre forward"
+        };
+        return fetch(process.env.REACT_APP_API, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, cors, *same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, same-origin, *omit
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                // "Content-Type": "application/x-www-form-urlencoded",
+            },
+            redirect: "follow", // manual, *follow, error
+            referrer: "no-referrer", // no-referrer, *client
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+        });
+    }
+
     static getPositionData() {
         return positionData;
     }
 
     static getPlayerData() {
-        return playerData;
+        return fetch(process.env.REACT_APP_API)
+            .then((response) => {
+                return response.json()
+            })
+            .then(myJson => {
+                return myJson
+            });
     }
 }
 
