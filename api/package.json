@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src",
+    "devstart": "nodemon src"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +18,8 @@
     "helmet": "^3.13.0",
     "morgan": "^1.9.1",
     "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }

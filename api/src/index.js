@@ -49,9 +49,7 @@ app.get('/:id', (req, res) => {
 
 // insert a new question
 app.post('/', (req, res) => {
-    console.log(req.body);
     const {name, photo, position} = req.body;
-    console.log(name, photo, position, req.body);
     db.llen("players", (err, playerCount) => {
         const newPlayer = {
             id: playerCount + 1,
